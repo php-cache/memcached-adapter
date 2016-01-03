@@ -13,7 +13,6 @@ namespace Cache\Adapter\Redis\Tests;
 
 use Cache\Adapter\Memcached\MemcachedCachePool;
 use Cache\IntegrationTests\CachePoolTest as BaseTest;
-use Predis\Client;
 
 class IntegrationPoolTest extends BaseTest
 {
