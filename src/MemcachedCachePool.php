@@ -53,7 +53,12 @@ class MemcachedCachePool extends AbstractCachePool
 
     protected function clearOneObjectFromCache($key)
     {
-        return $this->cache->delete($key);
+        if ($this->cache->delete($key)) {
+            return true;
+        }
+
+        // Return true if key not found
+        return $this->cache->getResultCode() === \Memcached::RES_NOTFOUND;
     }
 
     protected function storeItemInCache($key, CacheItemInterface $item, $ttl)

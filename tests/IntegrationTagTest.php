@@ -28,6 +28,7 @@ class IntegrationTagTest extends TaggableCachePoolTest
     {
         if ($this->client === null) {
             $this->client = new \Memcached();
+            $this->client->addServer('localhost', 11211);
         }
 
         return $this->client;
