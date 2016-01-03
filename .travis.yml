@@ -4,10 +4,7 @@ php:
   - "5.6"
   - "5.5"
 
-services:
-  - docker
-
-sudo: required
+sudo: false
 
 matrix:
   fast_finish: true
