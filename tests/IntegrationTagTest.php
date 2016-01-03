@@ -13,7 +13,6 @@ namespace Cache\Adapter\Redis\Tests;
 
 use Cache\Adapter\Memcached\MemcachedCachePool;
 use Cache\IntegrationTests\TaggableCachePoolTest;
-use Predis\Client;
 
 class IntegrationTagTest extends TaggableCachePoolTest
 {
