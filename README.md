@@ -12,7 +12,7 @@ composer require cache/memcached-adapter
 
 ### Configure
 
-To create an instance of `MemcachedCachePool` you need to configure a ´\Memcached` client. 
+To create an instance of `MemcachedCachePool` you need to configure a `\Memcached` client. 
 
 ```php
 $client = new \Memcached();
