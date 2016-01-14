@@ -31,7 +31,8 @@
         "ext-memcached":        "*",
         "psr/cache":            "1.0.0",
         "cache/adapter-common": "^0.1",
-        "cache/taggable-cache": "^0.2"
+        "cache/taggable-cache": "^0.4",
+        "cache/hierarchical-cache": "^0.1"
     },
     "require-dev":
     {
