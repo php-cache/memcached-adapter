@@ -40,7 +40,7 @@ class MemcachedCachePool extends AbstractCachePool implements HierarchicalPoolIn
 
     protected function fetchObjectFromCache($key)
     {
-        return $this->cache->get($this->getHierarchyKey($key));
+        return $this->cache->get($this->trimKey($this->getHierarchyKey($key)));
     }
 
     protected function clearAllObjectsFromCache()
@@ -51,8 +51,8 @@ class MemcachedCachePool extends AbstractCachePool implements HierarchicalPoolIn
     protected function clearOneObjectFromCache($key)
     {
         $this->commit();
-        $key = $this->getHierarchyKey($key, $path);
-        $this->cache->increment($path, 1, 0);
+        $key = $this->trimKey($this->getHierarchyKey($key, $path));
+        $this->cache->increment($this->trimKey($path), 1, 0);
         $this->clearHierarchyKeyCache();
 
         if ($this->cache->delete($key)) {
@@ -69,13 +69,28 @@ class MemcachedCachePool extends AbstractCachePool implements HierarchicalPoolIn
             $ttl = 0;
         }
 
-        $key = $this->getHierarchyKey($key);
+        $key = $this->trimKey($this->getHierarchyKey($key));
 
         return $this->cache->set($key, $item, $ttl);
     }
 
     protected function getValueFormStore($key)
     {
-        return $this->cache->get($key);
+        return $this->cache->get($this->trimKey($key));
+    }
+
+    /**
+     * Calculate a key. If it is more than 250 chars we should hash the key.
+     *
+     * @param $key
+     * @param null $ref
+     */
+    private function trimKey($key)
+    {
+        if (strlen($key) < 250) {
+            return $key;
+        }
+        // This should maybe be logged
+        return sha1($key);
     }
 }
