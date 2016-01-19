@@ -12,14 +12,18 @@
 namespace Cache\Adapter\Memcached;
 
 use Cache\Adapter\Common\AbstractCachePool;
+use Cache\Hierarchy\HierarchicalCachePoolTrait;
+use Cache\Hierarchy\HierarchicalPoolInterface;
 use Psr\Cache\CacheItemInterface;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
  */
-class MemcachedCachePool extends AbstractCachePool
+class MemcachedCachePool extends AbstractCachePool implements HierarchicalPoolInterface
 {
+    use HierarchicalCachePoolTrait;
+
     /**
      * @type \Memcached
      */
@@ -31,11 +35,16 @@ class MemcachedCachePool extends AbstractCachePool
     public function __construct(\Memcached $cache)
     {
         $this->cache = $cache;
+        $this->cache->setOption(\Memcached::OPT_BINARY_PROTOCOL, true);
     }
 
     protected function fetchObjectFromCache($key)
     {
-        return $this->cache->get($key);
+        if (false === $result = unserialize($this->cache->get($this->getHierarchyKey($key)))) {
+            return [false, null];
+        }
+
+        return $result;
     }
 
     protected function clearAllObjectsFromCache()
@@ -45,6 +54,11 @@ class MemcachedCachePool extends AbstractCachePool
 
     protected function clearOneObjectFromCache($key)
     {
+        $this->commit();
+        $key = $this->getHierarchyKey($key, $path);
+        $this->cache->increment($path, 1, 0);
+        $this->clearHierarchyKeyCache();
+
         if ($this->cache->delete($key)) {
             return true;
         }
@@ -59,6 +73,13 @@ class MemcachedCachePool extends AbstractCachePool
             $ttl = 0;
         }
 
-        return $this->cache->set($key, $item, $ttl);
+        $key = $this->getHierarchyKey($key);
+
+        return $this->cache->set($key, serialize([true, $item->get()]), $ttl);
+    }
+
+    protected function getValueFormStore($key)
+    {
+        return $this->cache->get($key);
     }
 }

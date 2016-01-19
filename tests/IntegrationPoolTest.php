@@ -9,27 +9,11 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Cache\Adapter\Redis\Tests;
+namespace Cache\Adapter\Memcached\Tests;
 
-use Cache\Adapter\Memcached\MemcachedCachePool;
 use Cache\IntegrationTests\CachePoolTest as BaseTest;
 
 class IntegrationPoolTest extends BaseTest
 {
-    private $client = null;
-
-    public function createCachePool()
-    {
-        return new MemcachedCachePool($this->getClient());
-    }
-
-    private function getClient()
-    {
-        if ($this->client === null) {
-            $this->client = new \Memcached();
-            $this->client->addServer('localhost', 11211);
-        }
-
-        return $this->client;
-    }
+    use CreatePoolTrait;
 }
